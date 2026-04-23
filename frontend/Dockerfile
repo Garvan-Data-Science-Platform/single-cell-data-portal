@@ -40,7 +40,9 @@ WORKDIR /corpora-frontend
 ADD ./src/configs/build.js src/configs/configs.js
 RUN mkdir -p node_modules
 RUN ln -sf /opt/node_app/node_modules/* /opt/node_app/node_modules/.bin ./node_modules/.
-RUN npm run build
+# RUN npm run build
+# Copy pre-built .next folder (build locally with: cd frontend && npm run build)
+ADD .next /corpora-frontend/.next
 
 ARG HAPPY_BRANCH="unknown"
 ARG HAPPY_COMMIT=""

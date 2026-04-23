@@ -122,7 +122,7 @@
   "scripts": {
     "preinstall": "make retrieve-descendants",
     "dev": "next dev --experimental-https",
-    "build": "NODE_OPTIONS=\"--max_old_space_size=2048\" next build",
+    "build": "NEXT_DISABLE_SWC=true NODE_OPTIONS=\"--max_old_space_size=8192\" next build",
     "start": "next start",
     "develop": "next dev --experimental-https",
     "format": "concurrently \"npx prettier --write .\" \"node_modules/.bin/next lint --fix\" \"node_modules/.bin/stylelint --fix '**/*.{js,ts,tsx,css}'\"",
