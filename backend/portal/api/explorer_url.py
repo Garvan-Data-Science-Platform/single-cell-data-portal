@@ -13,4 +13,5 @@ def generate(dataset: DatasetVersion, use_canonical=True):
     # dataset_id = dataset.dataset_id if use_canonical else dataset.version_id
     # return f"{frontend_url}/e/{dataset_id}.cxg/"
     id = dataset.version_id
-    return f"{frontend_url}/e/{id}.h5ad/"
+    # return f"{frontend_url}/a/{id}.h5ad/"
+    return f"{frontend_url}/e/{id}.cxg/"

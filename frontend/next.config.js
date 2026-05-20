@@ -50,7 +50,7 @@ const defaultSecureHeaders = {
       fontSrc: ["'self'"],
       formAction: ["'self'", HUBSPOT_FORMS_URL],
       frameAncestors: ["'none'"],
-      frameSrc: ["'self'", configs.API_URL],
+      frameSrc: ["'self'", configs.API_URL, configs.EXPLORER_URL],
       imgSrc: ["'self'", "data:", HUBSPOT_FORMS_URL],
       manifestSrc: ["'self'"],
       mediaSrc: ["'self'"],
