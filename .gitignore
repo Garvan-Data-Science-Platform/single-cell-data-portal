@@ -163,4 +163,4 @@ ai_task_docs/
 /my_data
 /my_scripts/checkData.ipynb
 
-/frontend/src/pages/a/[...params].tsx
+/frontend/src/pages/a
