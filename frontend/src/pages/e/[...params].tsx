@@ -39,7 +39,7 @@ const ErrorMessage = styled.div`
   margin: 20px 0;
 `;
 
-const CellxgeneFrame = styled.iframe`
+const ExplorerFrame = styled.iframe`
   width: 100%;
   height: 100vh;
   border: none;
@@ -55,7 +55,7 @@ const CellxgeneFrame = styled.iframe`
 export default function ExplorerRoute() {
   const router = useRouter();
   const { params } = router.query;
-  const [cellxgeneUrl, setCellxgeneUrl] = useState<string | null>(null);
+  const [explorerUrl, setExplorerUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -64,18 +64,18 @@ export default function ExplorerRoute() {
     }
 
     // Reset state when params change (new dataset selected)
-    setCellxgeneUrl(null);
+    setExplorerUrl(null);
     setError(null);
 
-    const launchCellxgene = () => {
+    const launchExplorer = () => {
       try {
         let filename = params[0];
         // .cxg: load directly from the single-cell-explorer server
         if (filename.endsWith(".cxg")) {
           const explorerUrl = `${configs.EXPLORER_URL}/e/${filename}`;
-          setCellxgeneUrl(explorerUrl);
+          setExplorerUrl(explorerUrl);
         } else {
-          setError(`Failed to launch Explorer, the file does not have a correct format`);
+          setError(`Failed to launch Explorer, the Explorer route only supports .cxg files`);
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
@@ -84,7 +84,7 @@ export default function ExplorerRoute() {
       }
     };
 
-    launchCellxgene();
+    launchExplorer();
   }, [params]);
 
   if (error) {
@@ -103,7 +103,7 @@ export default function ExplorerRoute() {
       <Head>
         <title>CELLxGENE | Explorer</title>
       </Head>
-      <CellxgeneFrame src={cellxgeneUrl} />
+      <ExplorerFrame src={explorerUrl} />
     </>
   );
 }
