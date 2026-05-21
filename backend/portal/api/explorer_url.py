@@ -10,8 +10,5 @@ def generate(dataset: DatasetVersion, use_canonical=True):
     will use dataset version ID if use_canonical is set to False.
     """
     frontend_url = os.getenv("FRONTEND_URL", "")
-    use_canonical_var = os.getenv("USE_CANONICAL")
-    if use_canonical_var is not None:
-        use_canonical = use_canonical_var
     dataset_id = dataset.dataset_id if use_canonical else dataset.version_id
     return f"{frontend_url}/e/{dataset_id}.cxg/"

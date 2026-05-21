@@ -164,6 +164,3 @@ ai_task_docs/
 /my_scripts/checkData.ipynb
 
 /frontend/src/pages/a
-
-.env.*
-!.env.*example
