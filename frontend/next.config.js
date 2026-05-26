@@ -111,6 +111,18 @@ module.exports = {
       },
     ];
   },
+  async rewrites() {
+    // Route /e/:path* to the internal proxy API route, which forwards to the
+    // explorer service using an https.
+    return [
+      {
+        source: "/e/:path*",
+        destination: "https://explorer.corporanet.local:5000/e/:path*",
+        // destination: "https://www.google.com",
+        // destination: "/api/explorer/:path*",
+      },
+    ];
+  },
   async redirects() {
     return [
       {
