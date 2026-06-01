@@ -4,12 +4,14 @@
 // const API_URL = "https://api.cellxgene.dev.single-cell.czi.technology";
 const API_URL = "https://backend.corporanet.local:5000";
 const EXPLORER_URL = "https://explorer.corporanet.local:5500";
+const PROXY_EXPLORER_URL = "https://explorer.corporanet.local:5000";
 const configs = {
   // Dev
   API_URL,
   DE_API_URL: API_URL,
   WMG_API_URL: API_URL,
   EXPLORER_URL: EXPLORER_URL,
+  PROXY_EXPLORER_URL: PROXY_EXPLORER_URL,
   CELLGUIDE_DATA_URL:
     "https://cellguide.cellxgene.dev.single-cell.czi.technology",
   // Staging

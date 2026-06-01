@@ -117,9 +117,12 @@ module.exports = {
     return [
       {
         source: "/e/:path*",
-        destination: "https://explorer.corporanet.local:5000/e/:path*",
-        // destination: "https://www.google.com",
-        // destination: "/api/explorer/:path*",
+        destination: "/api/explorer/:path*",
+      },
+      {
+        // Browser's Phase 2 API calls (after the S3 URI is fetched) are routed through the proxy
+        source: "/s3_uri/:path*",       
+        destination: "/api/explorer/s3_uri/:path*",
       },
     ];
   },
