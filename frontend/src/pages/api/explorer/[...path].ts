@@ -4,11 +4,13 @@ import https from "https";
 import { URL } from "url";
 import configs from "../../../configs/configs";
 
-const agent = new https.Agent({
-  // ca: fs.readFileSync("/tmp/explorer-cert/server-cert.pem"),
-  // rejectUnauthorized: true,
-  rejectUnauthorized: false,
-});
+// Determine if we are running locally or in the cloud
+const isLocalDev = process.env.DEPLOYMENT_STAGE !== 'production';
+
+// Only create the insecure agent if we are working on our local laptop
+const agent = isLocalDev 
+  ? new https.Agent({ rejectUnauthorized: false }) 
+  : undefined; // In the cloud, 'undefined' tells Node to use its native secure agent
 
 export const config = { api: { bodyParser: false, responseLimit: false } };
 
@@ -66,7 +68,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       path: url.pathname + url.search,
       method: req.method,
       headers: reqHeaders,
-      agent,
+      ...(agent && { agent }),
     },
     (proxyRes) => {
       // Node.js already de-chunks Transfer-Encoding:chunked internally when reading
