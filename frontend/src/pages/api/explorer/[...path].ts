@@ -39,7 +39,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // the root (not under /e/), so they must not get the /e/ prefix
   const isS3UriPath = joinedPath.startsWith("s3_uri/");
   const upstreamPath = isS3UriPath ? `/${pathWithSlash}` : `/e/${pathWithSlash}`;
-  const upstream = `${configs.PROXY_EXPLORER_URL}${upstreamPath}${queryString}`;
+  const upstream = `${configs.EXPLORER_URL}${upstreamPath}${queryString}`;
   const url = new URL(upstream);
   console.log("LOG URL:", url);
 
