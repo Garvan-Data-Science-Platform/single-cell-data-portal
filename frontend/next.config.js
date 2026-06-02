@@ -121,9 +121,9 @@ module.exports = {
       },
       {
         // Browser's Phase 2 API calls (after the S3 URI is fetched) are routed through the proxy
-        source: "/s3_uri/:path*",       
+        source: "/s3_uri/:path*",
         destination: "/api/explorer/s3_uri/:path*",
-      },
+      }
     ];
   },
   async redirects() {

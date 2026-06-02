@@ -5,7 +5,8 @@ import { URL } from "url";
 import configs from "../../../configs/configs";
 
 // Determine if we are running locally or in the cloud
-const isLocalDev = process.env.DEPLOYMENT_STAGE !== 'production';
+const deploymentStage = process.env.DEPLOYMENT_STAGE;
+const isLocalDev = deploymentStage !== 'prod';
 
 // Only create the insecure agent if we are working on our local laptop
 const agent = isLocalDev 
@@ -15,6 +16,15 @@ const agent = isLocalDev
 export const config = { api: { bodyParser: false, responseLimit: false } };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+
+  if (!configs.EXPLORER_URL) {
+     res.status(500).end("Explorer URL is not configured");
+     return;
+   }
+   if (!req.query.path) {
+     res.status(400).end("Missing explorer path");
+     return;
+   }
   
   // 1. Get the actual path from Next.js query array
   // e.g., 37196609-7a29-4ec2-af60-08b4316e235a.cxg/static/main-af4202593ec3072535c6.css
@@ -43,15 +53,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const upstreamPath = isS3UriPath ? `/${pathWithSlash}` : `/e/${pathWithSlash}`;
   const upstream = `${configs.EXPLORER_URL}${upstreamPath}${queryString}`;
   const url = new URL(upstream);
-  console.log("LOG URL:", url);
 
   //-------------------------------------
   // Get the response
 
-  // Strip hop-by-hop request headers that must not be forwarded to the upstream
+  // Strip hop-by-hop and sensitive request headers that must not be forwarded to the upstream
   const reqHeaders = { ...req.headers } as Record<string, string | string[] | undefined>;
   delete reqHeaders["connection"];
   delete reqHeaders["transfer-encoding"];
+  delete reqHeaders["cookie"];
+  delete reqHeaders["authorization"];
   reqHeaders["host"] = url.host;
 
   // For .cxg dataset pages we buffer and patch the HTML response body
@@ -85,7 +96,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       // Override the portal's strict CSP for all explorer responses
       // res.writeHead() takes precedence over res.setHeader() (used by Next.js's
       // headers() config), so this replaces the portal CSP rather than adding a
-      // second header that browsers would and together
+      // second header that browsers would add together
       // Key relaxations needed by the explorer:
       //   - base-uri 'self'        → allows the <base> tag we inject
       //   - 'unsafe-inline'        → allows window.CELLXGENE inline scripts
