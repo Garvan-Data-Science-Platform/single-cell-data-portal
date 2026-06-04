@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import https from "https";
-// import fs from "fs";
 import { URL } from "url";
 import configs from "../../../configs/configs";
 
@@ -12,8 +11,6 @@ const isLocalDev = deploymentStage !== 'prod';
 const agent = isLocalDev 
   ? new https.Agent({ rejectUnauthorized: false }) 
   : undefined; // In the cloud, 'undefined' tells Node to use its native secure agent
-
-export const config = { api: { bodyParser: false, responseLimit: false } };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
 

@@ -1,7 +1,6 @@
 // (thuang): For local development, please copy the content of this file
 // to a new file named `configs.js` in this directory.
 
-// const API_URL = "https://api.cellxgene.dev.single-cell.czi.technology";
 const API_URL = "https://backend.corporanet.local:5000";
 const EXPLORER_URL = "https://explorer.corporanet.local:5000";
 const configs = {
