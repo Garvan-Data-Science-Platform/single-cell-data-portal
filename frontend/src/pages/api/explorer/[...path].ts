@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import type { NextApiRequest, NextApiResponse } from "next";
 import https from "https";
 import { URL } from "url";
