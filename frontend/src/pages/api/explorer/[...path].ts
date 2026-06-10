@@ -5,34 +5,36 @@ import configs from "../../../configs/configs";
 
 // Determine if we are running locally or in the cloud
 const deploymentStage = process.env.DEPLOYMENT_STAGE;
-const isLocalDev = deploymentStage !== 'prod';
+const isLocalDev = deploymentStage !== "prod";
 
 // Only create the insecure agent if we are working on our local laptop
-const agent = isLocalDev 
-  ? new https.Agent({ rejectUnauthorized: false }) 
+const agent = isLocalDev
+  ? new https.Agent({ rejectUnauthorized: false })
   : undefined; // In the cloud, 'undefined' tells Node to use its native secure agent
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-
   if (!configs.EXPLORER_URL) {
-     res.status(500).end("Explorer URL is not configured");
-     return;
-   }
-   if (!req.query.path) {
-     res.status(400).end("Missing explorer path");
-     return;
-   }
-  
+    res.status(500).end("Explorer URL is not configured");
+    return;
+  }
+  if (!req.query.path) {
+    res.status(400).end("Missing explorer path");
+    return;
+  }
+
   // 1. Get the actual path from Next.js query array
   // e.g., 37196609-7a29-4ec2-af60-08b4316e235a.cxg/static/main-af4202593ec3072535c6.css
   // req.query.path segments are decoded once by Next.js routing (e.g. %25 → %)
-  const parts = (Array.isArray(req.query.path) ? req.query.path : [req.query.path as string])
-    .map((segment) => encodeURIComponent(segment));
+  const parts = (
+    Array.isArray(req.query.path) ? req.query.path : [req.query.path as string]
+  ).map((segment) => encodeURIComponent(segment));
   const joinedPath = parts.join("/");
 
   // 2. Safely capture any query strings (?foo=bar) to pass along
   // just for safety, may not be needed for our case
-  const queryString = req.url?.includes("?") ? req.url.substring(req.url.indexOf("?")) : "";
+  const queryString = req.url?.includes("?")
+    ? req.url.substring(req.url.indexOf("?"))
+    : "";
 
   // 3. Prepare upstream routing boundaries
   // only trailing slash on .cxg dataset, not on static assets
@@ -47,7 +49,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // /s3_uri/<encoded-s3-uri>/api/v0.3/... paths are Flask routes registered at
   // the root (not under /e/), so they must not get the /e/ prefix
   const isS3UriPath = joinedPath.startsWith("s3_uri/");
-  const upstreamPath = isS3UriPath ? `/${pathWithSlash}` : `/e/${pathWithSlash}`;
+  const upstreamPath = isS3UriPath
+    ? `/${pathWithSlash}`
+    : `/e/${pathWithSlash}`;
   const upstream = `${configs.EXPLORER_URL}${upstreamPath}${queryString}`;
   const url = new URL(upstream);
 
@@ -55,7 +59,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // Get the response
 
   // Strip hop-by-hop and sensitive request headers that must not be forwarded to the upstream
-  const reqHeaders = { ...req.headers } as Record<string, string | string[] | undefined>;
+  const reqHeaders = { ...req.headers } as Record<
+    string,
+    string | string[] | undefined
+  >;
   delete reqHeaders["connection"];
   delete reqHeaders["transfer-encoding"];
   delete reqHeaders["cookie"];
@@ -82,7 +89,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       // Node.js already de-chunks Transfer-Encoding:chunked internally when reading
       // proxyRes, so forwarding that header would corrupt the response in the browser
       // Also strip other hop-by-hop headers
-      const HOP_BY_HOP = new Set(["transfer-encoding", "connection", "keep-alive", "trailer"]);
+      const HOP_BY_HOP = new Set([
+        "transfer-encoding",
+        "connection",
+        "keep-alive",
+        "trailer",
+      ]);
       const headers: Record<string, string | string[]> = {};
       for (const [k, v] of Object.entries(proxyRes.headers)) {
         if (!HOP_BY_HOP.has(k.toLowerCase()) && v !== undefined) {
