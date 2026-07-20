@@ -80,7 +80,8 @@ def _get_valid_assay_id(assay_label):
     return assay_map.get(assay_label.lower(), 'OBI:0002751')  # default: Smart-seq2
 
 # Create engine and setup schema
-engine = create_engine('postgresql://corpora:test_pw@database.corporanet.local:5432')
+DB_HOST = os.getenv("DATABASE_HOST", "database.corporanet.local")
+engine = create_engine(f'postgresql://corpora:test_pw@{DB_HOST}:5432')
 with engine.connect() as conn:
     conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS {SCHEMA_NAME}'))
     conn.commit()
