@@ -37,6 +37,9 @@ ADD tests/unit/backend/wmg /single-cell-data-portal/tests/unit/backend/wmg
 ADD backend/wmg/server/container_init.sh /single-cell-data-portal/container_init.sh
 ADD backend/wmg /single-cell-data-portal/backend/wmg
 ADD backend/common /single-cell-data-portal/backend/common
+ADD backend/portal /single-cell-data-portal/backend/portal
+ADD backend/curation /single-cell-data-portal/backend/curation
+ADD backend/layers /single-cell-data-portal/backend/layers
 
 ARG HAPPY_BRANCH="unknown"
 ARG HAPPY_COMMIT=""
