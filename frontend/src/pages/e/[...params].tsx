@@ -69,13 +69,15 @@ export default function ExplorerRoute() {
 
     const launchExplorer = () => {
       try {
-        let filename = params[0];
+        const filename = params[0];
         // .cxg: load directly from the single-cell-explorer server
         if (filename.endsWith(".cxg")) {
           const explorerUrl = `${configs.EXPLORER_URL}/e/${filename}`;
           setExplorerUrl(explorerUrl);
         } else {
-          setError(`Failed to launch Explorer, the Explorer route only supports .cxg files`);
+          setError(
+            "Failed to launch Explorer, the Explorer route only supports .cxg files"
+          );
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
@@ -97,13 +99,13 @@ export default function ExplorerRoute() {
       </Container>
     );
   }
-  
+
   return (
     <>
       <Head>
         <title>CELLxGENE | Explorer</title>
       </Head>
-      <ExplorerFrame src={explorerUrl} />
+      <ExplorerFrame src={explorerUrl ?? undefined} />
     </>
   );
 }

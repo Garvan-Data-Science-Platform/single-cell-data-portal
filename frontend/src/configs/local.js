@@ -2,8 +2,8 @@
 // to a new file named `configs.js` in this directory.
 
 // const API_URL = "https://api.cellxgene.dev.single-cell.czi.technology";
-const API_URL = "https://backend.corporanet.local:5000";
-const EXPLORER_URL = "https://explorer.corporanet.local:5500";
+const API_URL = "http://backend.localhost";
+const EXPLORER_URL = "http://explorer.localhost";
 const configs = {
   // Dev
   API_URL,

@@ -121,7 +121,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "make retrieve-descendants",
-    "dev": "next dev --experimental-https",
+    "dev": "next dev",
     "build": "NEXT_DISABLE_SWC=true NODE_OPTIONS=\"--max_old_space_size=8192\" next build",
     "start": "next start",
     "develop": "next dev --experimental-https",
