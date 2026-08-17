@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
+import Head from "next/head";
 import configs from "../../configs/configs";
 
 const Container = styled.div`
@@ -38,7 +39,7 @@ const ErrorMessage = styled.div`
   margin: 20px 0;
 `;
 
-const CellxgeneFrame = styled.iframe`
+const ExplorerFrame = styled.iframe`
   width: 100%;
   height: 100vh;
   border: none;
@@ -47,16 +48,15 @@ const CellxgeneFrame = styled.iframe`
 `;
 
 /**
- * Route handler for explorer URLs: /e/[id].h5ad
+ * Route handler for explorer URLs: /e/[id].cxg
  *
- * Launches cellxgene and displays it embedded in an iframe.
+ * Launches explorer and displays it embedded in an iframe.
  */
 export default function ExplorerRoute() {
   const router = useRouter();
   const { params } = router.query;
-  const [cellxgeneUrl, setCellxgeneUrl] = useState<string | null>(null);
+  const [explorerUrl, setExplorerUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!params || params.length === 0) {
@@ -64,71 +64,48 @@ export default function ExplorerRoute() {
     }
 
     // Reset state when params change (new dataset selected)
-    setCellxgeneUrl(null);
+    setExplorerUrl(null);
     setError(null);
-    setLoading(true);
 
-    const launchCellxgene = async () => {
+    const launchExplorer = () => {
       try {
-        // Extract dataset ID from URL (remove .h5ad extension if present)
-        let datasetId = params[0];
-        if (datasetId.endsWith(".h5ad")) {
-          datasetId = datasetId.replace(".h5ad", "");
-        }
-
-        // Call cellxgene-launch endpoint
-        const apiUrl = `${configs.API_URL}/dp/v1/datasets/${datasetId}/cellxgene-launch`;
-
-        const response = await fetch(apiUrl);
-
-        if (response.ok) {
-          const metadata = await response.json();
-          const url = metadata.cellxgene_url;
-
-          // Load cellxgene in iframe after a delay to ensure all resources are ready
-          // Cellxgene needs time to fully initialize before serving all static resources
-          setTimeout(() => {
-            setCellxgeneUrl(url);
-            setLoading(false);
-          }, 3000);
+        const filename = params[0];
+        // .cxg: load directly from the single-cell-explorer server
+        if (filename.endsWith(".cxg")) {
+          const explorerUrl = `${configs.EXPLORER_URL}/e/${filename}`;
+          setExplorerUrl(explorerUrl);
         } else {
-          setError(`Failed to launch cellxgene (${response.status})`);
-          setLoading(false);
+          setError(
+            "Failed to launch Explorer, the Explorer route only supports .cxg files"
+          );
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
-        console.error("Error launching cellxgene:", err);
+        console.error("Error launching Explorer:", err);
         setError(message);
-        setLoading(false);
       }
     };
 
-    launchCellxgene();
+    launchExplorer();
   }, [params]);
 
   if (error) {
     return (
       <Container>
         <Card>
-          <Title>Error Loading Cellxgene</Title>
+          <Title>Error Loading Explorer</Title>
           <ErrorMessage>{error}</ErrorMessage>
         </Card>
       </Container>
     );
   }
 
-  if (loading || !cellxgeneUrl) {
-    return (
-      <Container>
-        <Card>
-          <Title>Loading Cellxgene</Title>
-          <p style={{ color: "#666" }}>
-            Please wait while we prepare your data...
-          </p>
-        </Card>
-      </Container>
-    );
-  }
-
-  return <CellxgeneFrame src={cellxgeneUrl} title="Cellxgene Visualization" />;
+  return (
+    <>
+      <Head>
+        <title>CELLxGENE | Explorer</title>
+      </Head>
+      <ExplorerFrame src={explorerUrl ?? undefined} />
+    </>
+  );
 }

@@ -1,22 +1,24 @@
 #!/bin/bash
-export AWS_REGION=us-west-2
-export AWS_DEFAULT_REGION=us-west-2
-export AWS_ACCESS_KEY_ID=nonce
-export AWS_SECRET_ACCESS_KEY=nonce
+export AWS_REGION="${AWS_REGION:-us-west-2}"
+export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-us-west-2}"
+export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID:-nonce}"
+export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-nonce}"
 
-export FRONTEND_URL=https://frontend.corporanet.local:3000
-export BACKEND_URL=https://backend.corporanet.local:5000
-export BACKEND_DE_URL=https://backend-de.corporanet.local:5000
-export BACKEND_WMG_URL=https://backend-wmg.corporanet.local:5000
+export FRONTEND_URL="${TRANSFER_PROTOCOL:-https}://${FRONTEND_HOST:-frontend.corporanet.local:3000}"
+export BACKEND_URL="${TRANSFER_PROTOCOL:-https}://${BACKEND_HOST:-backend.corporanet.local:5000}"
+export BACKEND_DE_URL="${TRANSFER_PROTOCOL:-https}://${BACKEND_DE_HOST:-backend-de.corporanet.local:5000}"
+export BACKEND_WMG_URL="${TRANSFER_PROTOCOL:-https}://${BACKEND_WMG_HOST:-backend-wmg.corporanet.local:5000}"
 
 # NOTE: This script is intended to run INSIDE the dockerized dev environment!
 # If you need to run it directly on your laptop for some reason, change
 # localstack below to localhost
-export LOCALSTACK_URL=http://localstack.corporanet.local:4566
+export LOCALSTACK_URL="${BOTO_ENDPOINT_URL:-http://localstack.corporanet.local:4566}"
 # How the backend can reach the OIDC idp
 export OIDC_INTERNAL_URL=http://oidc.corporanet.local
 # How a web browser can reach the OIDC idp
 export OIDC_BROWSER_URL=https://oidc.corporanet.local:8443
+
+export DB_HOST="${DATABASE_HOST:-database.corporanet.local}"
 
 # Get test credentials from oauth/users.json
 oauth_file="oauth/users.json"
@@ -85,8 +87,8 @@ ${local_aws} secretsmanager update-secret --secret-id corpora/cicd/test/auth0-se
     "grant_type": ""
 }' || true
 
-${local_aws} secretsmanager update-secret --secret-id corpora/backend/test/database --secret-string '{"database_uri":
- "postgresql://corpora:test_pw@database.corporanet.local:5432"}' || true
+${local_aws} secretsmanager update-secret --secret-id corpora/backend/test/database --secret-string "{\"database_uri\":
+ \"postgresql://corpora:test_pw@${DB_HOST}:5432\"}" || true
 ${local_aws} secretsmanager update-secret --secret-id corpora/backend/test/config --secret-string '{"upload_sfn_arn": "arn:aws:states:us-west-2:000000000000:stateMachine:uploader-dev-sfn", "curator_role_arn":"test_curation_role"}' || true
 
 # Make a 1mb data file
